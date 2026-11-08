@@ -1,0 +1,1157 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111416">
+<title>Dark Tuner</title>
+
+<style>
+:root {
+  --bg: #111416;
+  --panel: #1b2022;
+  --panel2: #252c2e;
+  --line: #37403e;
+  --text: #f1f4f1;
+  --muted: #98a39d;
+  --green: #b5ff54;
+  --yellow: #ffd16a;
+  --red: #ff8585;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 25px 16px 35px;
+  background:
+    radial-gradient(ellipse at 50% -15%, #29332d, transparent 55%),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  width: 100%;
+  max-width: 500px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.brand {
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+.badge {
+  color: var(--green);
+  background: #202b1b;
+  border: 1px solid #455637;
+  padding: 8px 12px;
+  border-radius: 30px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.card {
+  background: linear-gradient(145deg, #22292a, #191e20);
+  border: 1px solid #303a39;
+  border-radius: 24px;
+  padding: 22px 18px;
+  box-shadow: 0 20px 55px #0005;
+}
+
+.eyebrow {
+  text-align: center;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+
+.note-container {
+  text-align: center;
+  margin: 14px 0 22px;
+}
+
+.note {
+  font-size: 82px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -5px;
+}
+
+.frequency {
+  font-size: 20px;
+  font-weight: 750;
+  color: var(--green);
+  margin-top: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.string-label {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  margin-top: 7px;
+}
+
+.meter {
+  background: #14191b;
+  border: 1px solid #303938;
+  border-radius: 19px;
+  padding: 16px 12px 12px;
+}
+
+.meter svg {
+  width: 100%;
+  display: block;
+}
+
+.status {
+  text-align: center;
+  min-height: 25px;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .5px;
+  color: var(--muted);
+}
+
+.status.good {
+  color: var(--green);
+}
+
+.status.low {
+  color: var(--yellow);
+}
+
+.status.high {
+  color: #ff9b79;
+}
+
+.meter-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #89948e;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.section-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  margin: 23px 0 10px;
+}
+
+.strings {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 7px;
+}
+
+.string {
+  background: #293133;
+  border: 1px solid #3b4546;
+  border-radius: 13px;
+  padding: 10px 3px;
+  text-align: center;
+  color: var(--text);
+  transition: .15s;
+}
+
+.string .letter {
+  display: block;
+  font-size: 22px;
+  font-weight: 850;
+}
+
+.string small {
+  display: block;
+  color: #89958e;
+  font-size: 9px;
+  margin-top: 4px;
+}
+
+.string.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #172015;
+  box-shadow: 0 0 22px #b5ff5430;
+}
+
+.string.active small {
+  color: #40522e;
+}
+
+.action {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 21px;
+  background: var(--green);
+  color: #172015;
+  font-weight: 900;
+  letter-spacing: .7px;
+  cursor: pointer;
+  transition: .15s;
+}
+
+.action:active {
+  transform: scale(.98);
+}
+
+.action:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.action.listening {
+  background: #29352a;
+  color: var(--green);
+  border: 1px solid #506a3c;
+}
+
+.hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 13px 8px 0;
+  min-height: 34px;
+}
+
+.hint.error {
+  color: var(--red);
+}
+
+.signal-container {
+  margin-top: 14px;
+}
+
+.signal-label {
+  display: flex;
+  justify-content: space-between;
+  color: #89948e;
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.signal-track {
+  height: 4px;
+  background: #343c3b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.signal-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--green);
+  transition: width .1s;
+}
+
+.footer {
+  text-align: center;
+  color: #66716b;
+  font-size: 10px;
+  margin-top: 19px;
+}
+
+@media (max-width: 360px) {
+  .card {
+    padding: 18px 12px;
+  }
+
+  .note {
+    font-size: 70px;
+  }
+
+  .strings {
+    gap: 4px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="app">
+
+<header>
+  <div>
+    <div class="brand">DARK TUNER</div>
+    <div class="subtitle">GUITAR TUNING</div>
+  </div>
+
+  <div class="badge">STANDARD E</div>
+</header>
+
+<section class="card">
+
+  <div class="eyebrow" id="detectedLabel">
+    ESPERANDO UNA CUERDA
+  </div>
+
+  <div class="note-container">
+    <div class="note" id="note">—</div>
+    <div class="frequency" id="frequency">— Hz</div>
+    <div class="string-label" id="stringLabel">
+      TOCÁ UNA CUERDA
+    </div>
+  </div>
+
+  <div class="meter">
+
+    <svg viewBox="0 0 320 142">
+
+      <path
+        d="M35 112 Q160 -14 285 112"
+        fill="none"
+        stroke="#46504c"
+        stroke-width="11"
+        stroke-linecap="round"
+      />
+
+      <path
+        d="M132 19 Q160 11 188 19"
+        fill="none"
+        stroke="#b5ff54"
+        stroke-width="11"
+        stroke-linecap="round"
+      />
+
+      <line
+        x1="160" y1="19"
+        x2="160" y2="111"
+        stroke="#b5ff54"
+        stroke-width="1.5"
+        opacity=".25"
+        stroke-dasharray="3 4"
+      />
+
+      <line
+        id="needle"
+        x1="160"
+        y1="111"
+        x2="160"
+        y2="22"
+        stroke="#b5ff54"
+        stroke-width="3.5"
+        stroke-linecap="round"
+      />
+
+      <circle cx="160" cy="111" r="7" fill="#b5ff54"/>
+      <circle cx="160" cy="111" r="3" fill="#182019"/>
+
+      <g
+        fill="#87938c"
+        font-size="9"
+        font-weight="800"
+        text-anchor="middle"
+      >
+        <text x="42" y="133">GRAVE</text>
+        <text x="160" y="133">AFINADO</text>
+        <text x="278" y="133">AGUDA</text>
+      </g>
+
+    </svg>
+
+    <div class="status" id="status">
+      Listo para afinar
+    </div>
+
+    <div class="meter-labels">
+      <span>-50 CENTS</span>
+      <span>+50 CENTS</span>
+    </div>
+
+  </div>
+
+  <div class="section-title">
+    CUERDAS DE LA GUITARRA
+  </div>
+
+  <div class="strings" id="strings">
+
+    <div class="string" data-index="0">
+      <span class="letter">E</span>
+      <small>1ª</small>
+    </div>
+
+    <div class="string" data-index="1">
+      <span class="letter">B</span>
+      <small>2ª</small>
+    </div>
+
+    <div class="string" data-index="2">
+      <span class="letter">G</span>
+      <small>3ª</small>
+    </div>
+
+    <div class="string" data-index="3">
+      <span class="letter">D</span>
+      <small>4ª</small>
+    </div>
+
+    <div class="string" data-index="4">
+      <span class="letter">A</span>
+      <small>5ª</small>
+    </div>
+
+    <div class="string" data-index="5">
+      <span class="letter">E</span>
+      <small>6ª</small>
+    </div>
+
+  </div>
+
+  <button class="action" id="startBtn">
+    ACTIVAR MICRÓFONO
+  </button>
+
+  <div class="hint" id="hint">
+    Tocá una cuerda al aire. El afinador la reconocerá automáticamente.
+  </div>
+
+  <div class="signal-container">
+    <div class="signal-label">
+      <span>NIVEL DE SONIDO</span>
+      <span id="signalText">SIN SEÑAL</span>
+    </div>
+
+    <div class="signal-track">
+      <div class="signal-bar" id="signalBar"></div>
+    </div>
+  </div>
+
+</section>
+
+<div class="footer">
+  AFINACIÓN ESTÁNDAR · E A D G B E · A4 = 440 Hz
+</div>
+
+</main>
+
+<script>
+(() => {
+"use strict";
+
+/* =====================================
+   CONFIGURACIÓN DE LAS SEIS CUERDAS
+===================================== */
+
+const strings = [
+  { name: "E", octave: 4, freq: 329.6276, label: "PRIMERA CUERDA" },
+  { name: "B", octave: 3, freq: 246.9417, label: "SEGUNDA CUERDA" },
+  { name: "G", octave: 3, freq: 195.9977, label: "TERCERA CUERDA" },
+  { name: "D", octave: 3, freq: 146.8324, label: "CUARTA CUERDA" },
+  { name: "A", octave: 2, freq: 110.0000, label: "QUINTA CUERDA" },
+  { name: "E", octave: 2, freq: 82.4069, label: "SEXTA CUERDA" }
+];
+
+/* =====================================
+   ELEMENTOS DE INTERFAZ
+===================================== */
+
+const $ = id => document.getElementById(id);
+
+const noteEl = $("note");
+const frequencyEl = $("frequency");
+const stringLabelEl = $("stringLabel");
+const detectedEl = $("detectedLabel");
+const statusEl = $("status");
+const hintEl = $("hint");
+const button = $("startBtn");
+const needle = $("needle");
+const signalBar = $("signalBar");
+const signalText = $("signalText");
+
+const stringElements = [
+  ...document.querySelectorAll(".string")
+];
+
+/* =====================================
+   VARIABLES DE AUDIO
+===================================== */
+
+let audioContext = null;
+let analyser = null;
+let microphone = null;
+let stream = null;
+let buffer = null;
+
+let running = false;
+let animationFrame = null;
+
+let lastUpdate = 0;
+let lastPitch = 0;
+
+let stableIndex = -1;
+let stableCount = 0;
+let smoothCents = 0;
+
+let lastFrameTime = 0;
+
+/* =====================================
+   CONFIGURACIÓN DEL DETECTOR
+===================================== */
+
+const MIN_FREQ = 65;
+const MAX_FREQ = 380;
+
+const MIN_VOLUME = 0.003;
+const YIN_THRESHOLD = 0.18;
+
+/* =====================================
+   INTERFAZ
+===================================== */
+
+function selectString(index) {
+  stringElements.forEach((element, i) => {
+    element.classList.toggle("active", i === index);
+  });
+}
+
+function moveNeedle(cents) {
+
+  const clamped = Math.max(-50, Math.min(50, cents));
+
+  const angle = clamped / 50 * 55;
+  const radians = angle * Math.PI / 180;
+
+  const x = 160 + 89 * Math.sin(radians);
+  const y = 111 - 89 * Math.cos(radians);
+
+  needle.setAttribute("x2", x.toFixed(2));
+  needle.setAttribute("y2", y.toFixed(2));
+
+  if (Math.abs(cents) <= 5) {
+    needle.setAttribute("stroke", "#b5ff54");
+  } else if (Math.abs(cents) <= 25) {
+    needle.setAttribute("stroke", "#ffd16a");
+  } else {
+    needle.setAttribute("stroke", "#ff9b79");
+  }
+}
+
+function resetDisplay(message) {
+
+  noteEl.textContent = "—";
+  frequencyEl.textContent = "— Hz";
+
+  stringLabelEl.textContent = "TOCÁ UNA CUERDA";
+  detectedEl.textContent = "ESPERANDO UNA CUERDA";
+
+  statusEl.textContent = message;
+  statusEl.className = "status";
+
+  moveNeedle(0);
+  selectString(-1);
+}
+
+/* =====================================
+   DETECTOR DE FRECUENCIA - YIN
+===================================== */
+
+function detectPitch(input, sampleRate) {
+
+  const length = input.length;
+
+  // Eliminar componente continua.
+  let mean = 0;
+
+  for (let i = 0; i < length; i++) {
+    mean += input[i];
+  }
+
+  mean /= length;
+
+  // Calcular volumen RMS.
+  let rms = 0;
+
+  for (let i = 0; i < length; i++) {
+    const value = input[i] - mean;
+    rms += value * value;
+  }
+
+  rms = Math.sqrt(rms / length);
+
+  if (rms < MIN_VOLUME) {
+    return null;
+  }
+
+  const minTau = Math.max(
+    2,
+    Math.floor(sampleRate / MAX_FREQ)
+  );
+
+  const maxTau = Math.min(
+    Math.floor(sampleRate / MIN_FREQ),
+    Math.floor(length / 2)
+  );
+
+  const difference = new Float32Array(maxTau + 1);
+
+  /*
+    YIN:
+    Comparamos la señal consigo misma
+    desplazada por distintos períodos.
+
+    Se utiliza la misma cantidad de muestras
+    para cada desplazamiento.
+  */
+
+  const comparisonLength = length - maxTau;
+
+  for (let tau = 1; tau <= maxTau; tau++) {
+
+    let sum = 0;
+
+    for (let i = 0; i < comparisonLength; i++) {
+
+      const a = input[i] - mean;
+      const b = input[i + tau] - mean;
+
+      const delta = a - b;
+
+      sum += delta * delta;
+    }
+
+    difference[tau] = sum;
+  }
+
+  /*
+    Normalización acumulativa CMND.
+  */
+
+  const normalized = new Float32Array(maxTau + 1);
+
+  normalized[0] = 1;
+
+  let cumulative = 0;
+
+  for (let tau = 1; tau <= maxTau; tau++) {
+
+    cumulative += difference[tau];
+
+    normalized[tau] = cumulative > 0
+      ? difference[tau] * tau / cumulative
+      : 1;
+  }
+
+  /*
+    Buscar el primer mínimo que supere
+    el umbral de confianza.
+  */
+
+  let estimate = -1;
+
+  for (let tau = minTau; tau < maxTau; tau++) {
+
+    if (normalized[tau] < YIN_THRESHOLD) {
+
+      while (
+        tau + 1 <= maxTau &&
+        normalized[tau + 1] < normalized[tau]
+      ) {
+        tau++;
+      }
+
+      estimate = tau;
+      break;
+    }
+  }
+
+  /*
+    Búsqueda alternativa cuando la señal
+    no alcanza el primer umbral.
+  */
+
+  if (estimate === -1) {
+
+    let bestValue = Infinity;
+
+    for (let tau = minTau; tau <= maxTau; tau++) {
+
+      if (normalized[tau] < bestValue) {
+        bestValue = normalized[tau];
+        estimate = tau;
+      }
+    }
+
+    if (bestValue > 0.38) {
+      return null;
+    }
+  }
+
+  /*
+    Interpolación parabólica.
+  */
+
+  const previous = normalized[estimate - 1];
+  const current = normalized[estimate];
+  const next = normalized[estimate + 1];
+
+  const denominator =
+    2 * (2 * current - previous - next);
+
+  let adjustment = denominator !== 0
+    ? (next - previous) / denominator
+    : 0;
+
+  adjustment = Math.max(-1, Math.min(1, adjustment));
+
+  const period = estimate + adjustment;
+
+  const frequency = sampleRate / period;
+
+  if (
+    !Number.isFinite(frequency) ||
+    frequency < MIN_FREQ ||
+    frequency > MAX_FREQ
+  ) {
+    return null;
+  }
+
+  return {
+    frequency,
+    rms,
+    clarity: 1 - normalized[estimate]
+  };
+}
+
+/* =====================================
+   IDENTIFICACIÓN DE CUERDA
+===================================== */
+
+function identifyString(frequency) {
+
+  let bestIndex = -1;
+  let smallestDifference = Infinity;
+  let bestCents = 0;
+
+  strings.forEach((string, index) => {
+
+    const cents = 1200 * Math.log2(
+      frequency / string.freq
+    );
+
+    const difference = Math.abs(cents);
+
+    if (difference < smallestDifference) {
+
+      smallestDifference = difference;
+      bestIndex = index;
+      bestCents = cents;
+    }
+  });
+
+  /*
+    Evita asignar una cuerda si la frecuencia
+    está demasiado lejos de una nota estándar.
+  */
+
+  if (smallestDifference > 190) {
+    return null;
+  }
+
+  return {
+    index: bestIndex,
+    cents: bestCents
+  };
+}
+
+/* =====================================
+   ACTUALIZAR AFINADOR
+===================================== */
+
+function updateTuner(pitch) {
+
+  const result = identifyString(pitch.frequency);
+
+  if (!result) {
+    return;
+  }
+
+  const index = result.index;
+  const cents = result.cents;
+
+  /*
+    Esperar varias lecturas consecutivas
+    antes de confirmar la cuerda.
+  */
+
+  if (index === stableIndex) {
+    stableCount++;
+  } else {
+    stableIndex = index;
+    stableCount = 1;
+    smoothCents = cents;
+  }
+
+  if (stableCount < 2) {
+    return;
+  }
+
+  smoothCents =
+    smoothCents * 0.65 +
+    cents * 0.35;
+
+  const displayedCents = smoothCents;
+  const string = strings[index];
+
+  selectString(index);
+
+  detectedEl.textContent = "CUERDA DETECTADA";
+
+  noteEl.textContent =
+    string.name + string.octave;
+
+  frequencyEl.textContent =
+    pitch.frequency.toFixed(2) + " Hz";
+
+  stringLabelEl.textContent = string.label;
+
+  moveNeedle(displayedCents);
+
+  if (Math.abs(displayedCents) <= 5) {
+
+    statusEl.textContent = "✓ ¡AFINADO!";
+    statusEl.className = "status good";
+
+    hintEl.textContent =
+      "¡Perfecto! La cuerda está afinada. Tocá otra cuerda.";
+
+  } else if (displayedCents < 0) {
+
+    statusEl.textContent =
+      "HAY QUE TENSAR ↑";
+
+    statusEl.className = "status low";
+
+    hintEl.textContent =
+      "La cuerda está grave. Tensala un poco y volvé a tocarla.";
+
+  } else {
+
+    statusEl.textContent =
+      "HAY QUE DESTENSAR ↓";
+
+    statusEl.className = "status high";
+
+    hintEl.textContent =
+      "La cuerda está aguda. Destensala un poco y volvé a tocarla.";
+  }
+
+  lastUpdate = performance.now();
+}
+
+/* =====================================
+   BUCLE DE LECTURA DEL MICRÓFONO
+===================================== */
+
+function processAudio(timestamp) {
+
+  if (!running) {
+    return;
+  }
+
+  animationFrame = requestAnimationFrame(processAudio);
+
+  // Limitar el procesamiento para no sobrecargar el navegador.
+  if (timestamp - lastFrameTime < 35) {
+    return;
+  }
+
+  lastFrameTime = timestamp;
+
+  analyser.getFloatTimeDomainData(buffer);
+
+  // Calcular volumen aunque todavía no se detecte una nota.
+  let rms = 0;
+
+  for (let i = 0; i < buffer.length; i++) {
+    rms += buffer[i] * buffer[i];
+  }
+
+  rms = Math.sqrt(rms / buffer.length);
+
+  const signal = Math.min(100, rms * 900);
+
+  signalBar.style.width = signal + "%";
+
+  signalText.textContent =
+    rms > MIN_VOLUME ? "SONIDO DETECTADO" : "SIN SEÑAL";
+
+  const pitch = detectPitch(
+    buffer,
+    audioContext.sampleRate
+  );
+
+  if (pitch) {
+
+    // Evitar saltos extremos entre lecturas.
+    if (
+      !lastPitch ||
+      Math.abs(
+        1200 * Math.log2(pitch.frequency / lastPitch)
+      ) < 300
+    ) {
+
+      lastPitch = pitch.frequency;
+
+      updateTuner(pitch);
+
+    } else {
+
+      lastPitch = pitch.frequency;
+      stableCount = 0;
+      stableIndex = -1;
+    }
+
+  } else {
+
+    if (timestamp - lastUpdate > 1500) {
+
+      resetDisplay(
+        rms > MIN_VOLUME
+          ? "SONIDO DETECTADO · BUSCANDO NOTA"
+          : "ESCUCHANDO…"
+      );
+
+      stableIndex = -1;
+      stableCount = 0;
+      lastPitch = 0;
+    }
+  }
+}
+
+/* =====================================
+   ACTIVAR MICRÓFONO
+===================================== */
+
+async function startTuner() {
+
+  if (running) {
+    stopTuner();
+    return;
+  }
+
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ) {
+
+    hintEl.textContent =
+      "El navegador no permite usar el micrófono. Abrí esta página desde HTTPS o localhost.";
+
+    hintEl.className = "hint error";
+
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "CONECTANDO…";
+
+  try {
+
+    stream = await navigator.mediaDevices.getUserMedia({
+
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      },
+
+      video: false
+    });
+
+    const AudioContextClass =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    audioContext = new AudioContextClass();
+
+    if (audioContext.state === "suspended") {
+      await audioContext.resume();
+    }
+
+    microphone =
+      audioContext.createMediaStreamSource(stream);
+
+    analyser = audioContext.createAnalyser();
+
+    /*
+      4096 muestras permiten analizar
+      frecuencias graves de guitarra.
+    */
+
+    analyser.fftSize = 4096;
+
+    analyser.smoothingTimeConstant = 0;
+
+    microphone.connect(analyser);
+
+    buffer = new Float32Array(analyser.fftSize);
+
+    running = true;
+
+    stableIndex = -1;
+    stableCount = 0;
+    lastPitch = 0;
+    lastUpdate = performance.now();
+    lastFrameTime = 0;
+
+    button.textContent = "DETENER AFINADOR";
+    button.classList.add("listening");
+    button.disabled = false;
+
+    hintEl.className = "hint";
+
+    hintEl.textContent =
+      "Micrófono activo. Tocá una cuerda al aire y dejala sonar.";
+
+    detectedEl.textContent = "MICRÓFONO ACTIVO";
+
+    statusEl.textContent = "ESCUCHANDO…";
+
+    animationFrame = requestAnimationFrame(processAudio);
+
+  } catch (error) {
+
+    console.error("Error de micrófono:", error);
+
+    let message = "No se pudo activar el micrófono.";
+
+    if (
+      error.name === "NotAllowedError" ||
+      error.name === "SecurityError"
+    ) {
+
+      message =
+        "Permiso denegado. Habilitá el micrófono en el navegador.";
+
+    } else if (error.name === "NotFoundError") {
+
+      message =
+        "No se encontró ningún micrófono conectado.";
+
+    } else if (error.name === "NotReadableError") {
+
+      message =
+        "El micrófono está siendo utilizado por otra aplicación.";
+
+    }
+
+    hintEl.textContent = message;
+    hintEl.className = "hint error";
+
+    button.textContent = "INTENTAR DE NUEVO";
+
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    stream = null;
+
+  } finally {
+
+    button.disabled = false;
+
+  }
+}
+
+/* =====================================
+   DETENER AFINADOR
+===================================== */
+
+function stopTuner() {
+
+  running = false;
+
+  if (animationFrame !== null) {
+    cancelAnimationFrame(animationFrame);
+  }
+
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+
+  if (
+    audioContext &&
+    audioContext.state !== "closed"
+  ) {
+    audioContext.close();
+  }
+
+  stream = null;
+  audioContext = null;
+  analyser = null;
+  microphone = null;
+  buffer = null;
+
+  button.textContent = "ACTIVAR MICRÓFONO";
+  button.classList.remove("listening");
+
+  signalBar.style.width = "0%";
+  signalText.textContent = "SIN SEÑAL";
+
+  resetDisplay("Afinador detenido");
+
+  hintEl.className = "hint";
+
+  hintEl.textContent =
+    "Activá el micrófono para comenzar.";
+
+}
+
+/* =====================================
+   EVENTOS
+===================================== */
+
+button.addEventListener("click", startTuner);
+
+window.addEventListener("pagehide", () => {
+  if (running) {
+    stopTuner();
+  }
+});
+
+resetDisplay("Listo para afinar");
+
+})();
+</script>
+
+
+</body>
+</html>
